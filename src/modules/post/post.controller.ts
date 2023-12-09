@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Patch, Post, Request, Param, UseGuards, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Request, Param, UseGuards, Query, HttpStatus } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { ExpressRequestWithUser } from '../user/interfaces/express-request-with-user.interface';
@@ -9,6 +9,7 @@ import { UpdatePostDto } from './dtos/update-post.dto';
 import { IsMineGuard } from 'src/common/guards/is-mine.guard';
 import { QueryPaginationDto } from 'src/common/dtos/query-pagination.dto';
 import { PaginateOutput } from '../../common/utils/pagination.utils';
+import { SuccessResponse } from 'src/common/interfaces/response.interface';
 
 @Controller('post')
 export class PostController {
@@ -31,8 +32,15 @@ export class PostController {
 
     @Public()
     @Get(':id')
-    getPostById(@Param('id', ParseIntPipe) id: number): Promise<CPost> {
-        return this.getPostById(id);
+    async getPostById(@Param('id', ParseIntPipe) id: number): Promise<SuccessResponse<CPost>> {
+        const data = await this.postService.getPostById(id);
+
+        return {
+            success: true,
+            data,
+            message: "Success Get Post By Id",
+            statusCode: HttpStatus.OK
+        }
     }
 
     @Patch(':id')

@@ -21,6 +21,7 @@ export class PostService {
 
             return post
         } catch (error) {
+            console.error(error, error.code)
             if (error.code === 'P2003') {
                 throw new NotFoundException('Author not found');
             }
@@ -41,13 +42,21 @@ export class PostService {
     }
 
     async getPostById(id: number): Promise<Post> {
-        const post = await this.prisma.post.findFirstOrThrow({
-            where: {
-                id
-            }
-        })
+        try {
+            const post = await this.prisma.post.findFirstOrThrow({
+                where: {
+                    id
+                }
+            })
 
-        return post;
+            return post;
+        } catch (error) {
+            if (error.code === 'P2003') {
+                throw new NotFoundException(`Post with id ${id} not found`)
+            }
+
+            throw new HttpException(error, 500);
+        }
     }
 
     async updatePost(id: number, updatePostDto: UpdatePostDto) {
