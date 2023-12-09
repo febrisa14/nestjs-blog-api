@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../decorator/public.decorator';
+import { PrismaService } from '../../core/services/prisma.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -23,6 +24,7 @@ export class AuthGuard implements CanActivate {
         }
 
         const request = context.switchToHttp().getRequest();
+
         const token = this.extractTokenFromHeader(request);
 
         if (!token) {
